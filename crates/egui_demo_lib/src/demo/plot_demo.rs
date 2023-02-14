@@ -1002,7 +1002,6 @@ impl ChartsDemo {
             .y_axis_width(3)
             .allow_zoom(self.allow_zoom)
             .allow_drag(self.allow_drag)
-            // .highlight_hovered(true)
             .show(ui, |plot_ui| plot_ui.bar_chart(chart))
             .response
     }
@@ -1016,8 +1015,7 @@ impl ChartsDemo {
             Bar::new(4.5, 4.0).name("Day 5"),
         ])
         .width(0.7)
-        .name("Set 1")
-        .highlight(false);
+        .name("Set 1");
 
         let mut chart2 = BarChart::new(vec![
             Bar::new(0.5, 1.0),
@@ -1028,8 +1026,7 @@ impl ChartsDemo {
         ])
         .width(0.7)
         .name("Set 2")
-        .stack_on(&[&chart1])
-        .highlight(false);
+        .stack_on(&[&chart1]);
 
         let mut chart3 = BarChart::new(vec![
             Bar::new(0.5, -0.5),
@@ -1040,8 +1037,7 @@ impl ChartsDemo {
         ])
         .width(0.7)
         .name("Set 3")
-        .stack_on(&[&chart1, &chart2])
-        .highlight(false);
+        .stack_on(&[&chart1, &chart2]);
 
         let mut chart4 = BarChart::new(vec![
             Bar::new(0.5, 0.5),
@@ -1052,7 +1048,6 @@ impl ChartsDemo {
         ])
         .width(0.7)
         .name("Set 4")
-        .highlight(false)
         .stack_on(&[&chart1, &chart2, &chart3]);
 
         if !self.vertical {
