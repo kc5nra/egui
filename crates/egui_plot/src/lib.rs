@@ -134,7 +134,7 @@ struct PlotMemory {
     last_click_pos_for_zoom: Option<Pos2>,
     // skip serde
     #[cfg_attr(feature = "serde", serde(skip))]
-    hover_indexes: Option<HoverIndexes>,
+    hover_indexes: Option<SourceIndex>,
 }
 
 #[cfg(feature = "serde")]
@@ -1389,7 +1389,7 @@ pub struct PlotUi {
     response: Response,
     bounds_modifications: Vec<BoundsModification>,
     ctx: Context,
-    hover_indexes: Option<HoverIndexes>,
+    hover_indexes: Option<SourceIndex>,
 }
 
 impl PlotUi {
@@ -1448,7 +1448,7 @@ impl PlotUi {
     }
 
     ///
-    pub fn hover_indexes(&self) -> Option<HoverIndexes> {
+    pub fn hover_indexes(&self) -> Option<SourceIndex> {
         self.hover_indexes.clone()
     }
 
@@ -1701,7 +1701,7 @@ struct PreparedPlot {
 }
 
 impl PreparedPlot {
-    fn ui(self, ui: &mut Ui, response: &Response) -> (Vec<Cursor>, Option<HoverIndexes>) {
+    fn ui(self, ui: &mut Ui, response: &Response) -> (Vec<Cursor>, Option<SourceIndex>) {
         let mut axes_shapes = Vec::new();
 
         if self.show_grid.x {
@@ -1888,7 +1888,7 @@ impl PreparedPlot {
         ui: &Ui,
         pointer: Pos2,
         shapes: &mut Vec<Shape>,
-    ) -> (Vec<Cursor>, Option<HoverIndexes>) {
+    ) -> (Vec<Cursor>, Option<SourceIndex>) {
         let Self {
             transform,
             show_x,
@@ -1916,7 +1916,7 @@ impl PreparedPlot {
             .filter(|(_, elem)| elem.dist_sq <= interact_radius_sq);
 
         let mut cursors = Vec::new();
-        let mut index_interact_radius_sq = None;
+        let mut hover_indexes = None;
 
         let plot = items::PlotConfig {
             ui,
@@ -1926,11 +1926,23 @@ impl PreparedPlot {
         };
 
         if let Some(((index, item), elem)) = closest {
-            index_interact_radius_sq = Some(HoverIndexes {
-                retained: index,
-                sub: elem.index,
-                group: item.group(),
+            let (group_name, indexes, sub_index) = if item.group().is_some() {
+                let group = item.group().unwrap();
+                let mut index_overide = group.index_overide.clone();
+                if group.sub_index {
+                    index_overide.push(elem.index);
+                }
+                (group.group_name, index_overide, group.sub_index)
+            } else {
+                (String::new(), vec![index, elem.index], true)
+            };
+
+            hover_indexes = Some(SourceIndex {
+                group_name,
+                index_overide: indexes,
+                sub_index,
             });
+
             item.on_hover(elem, shapes, &mut cursors, &plot, label_formatter);
         } else {
             let value = transform.value_from_position(pointer);
@@ -1945,7 +1957,7 @@ impl PreparedPlot {
             );
         }
 
-        (cursors, index_interact_radius_sq)
+        (cursors, hover_indexes)
     }
 }
 
