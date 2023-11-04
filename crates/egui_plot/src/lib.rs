@@ -1835,7 +1835,7 @@ impl PreparedPlot {
 
         let closest = candidates
             .min_by_key(|(_, elem)| elem.dist_sq.ord())
-            .filter(|(_, elem)| elem.dist_sq <= interact_radius_sq);
+            .filter(|(item, elem)| elem.dist_sq <= interact_radius_sq && !item.ignoring_hover());
 
         let mut cursors = Vec::new();
 
