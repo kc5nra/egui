@@ -58,6 +58,10 @@ pub(super) trait PlotItem {
 
     fn bounds(&self) -> PlotBounds;
 
+    fn ignore_hover(&mut self);
+
+    fn ignoring_hover(&self) -> bool;
+
     fn find_closest(&self, point: Pos2, transform: &PlotTransform) -> Option<ClosestElem> {
         match self.geometry() {
             PlotGeometry::None => None,
@@ -130,6 +134,7 @@ pub struct HLine {
     pub(super) highlight: bool,
     pub(super) style: LineStyle,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl HLine {
@@ -141,6 +146,7 @@ impl HLine {
             highlight: false,
             style: LineStyle::Solid,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -148,6 +154,12 @@ impl HLine {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore this line in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -252,6 +264,14 @@ impl PlotItem for HLine {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::None
     }
@@ -273,6 +293,7 @@ pub struct VLine {
     pub(super) highlight: bool,
     pub(super) style: LineStyle,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl VLine {
@@ -284,6 +305,7 @@ impl VLine {
             highlight: false,
             style: LineStyle::Solid,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -291,6 +313,12 @@ impl VLine {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore this line in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -395,6 +423,14 @@ impl PlotItem for VLine {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::None
     }
@@ -416,6 +452,7 @@ pub struct Line {
     pub(super) fill: Option<f32>,
     pub(super) style: LineStyle,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl Line {
@@ -428,6 +465,7 @@ impl Line {
             fill: None,
             style: LineStyle::Solid,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -435,6 +473,12 @@ impl Line {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore this line in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -593,6 +637,14 @@ impl PlotItem for Line {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::Points(self.series.points())
     }
@@ -611,6 +663,7 @@ pub struct Polygon {
     pub(super) fill_color: Option<Color32>,
     pub(super) style: LineStyle,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl Polygon {
@@ -623,6 +676,7 @@ impl Polygon {
             fill_color: None,
             style: LineStyle::Solid,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -631,6 +685,12 @@ impl Polygon {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore this polygon in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -754,6 +814,14 @@ impl PlotItem for Polygon {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::Points(self.series.points())
     }
@@ -773,6 +841,7 @@ pub struct Text {
     pub(super) color: Color32,
     pub(super) anchor: Align2,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl Text {
@@ -785,6 +854,7 @@ impl Text {
             color: Color32::TRANSPARENT,
             anchor: Align2::CENTER_CENTER,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -893,6 +963,14 @@ impl PlotItem for Text {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::None
     }
@@ -925,6 +1003,8 @@ pub struct Points {
 
     pub(super) stems: Option<f32>,
     pub(super) group: Option<SourceIndex>,
+
+    pub(super) ignoring_hover: bool,
 }
 
 impl Points {
@@ -939,6 +1019,7 @@ impl Points {
             highlight: false,
             stems: None,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -953,6 +1034,12 @@ impl Points {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore these points in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -1166,6 +1253,14 @@ impl PlotItem for Points {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::Points(self.series.points())
     }
@@ -1184,6 +1279,7 @@ pub struct Arrows {
     pub(super) name: String,
     pub(super) highlight: bool,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl Arrows {
@@ -1196,6 +1292,7 @@ impl Arrows {
             name: Default::default(),
             highlight: false,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -1203,6 +1300,12 @@ impl Arrows {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore these arrows in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -1319,6 +1422,14 @@ impl PlotItem for Arrows {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::Points(self.origins.points())
     }
@@ -1341,6 +1452,7 @@ pub struct PlotImage {
     pub(super) highlight: bool,
     pub(super) name: String,
     pub(super) group: Option<SourceIndex>,
+    pub(super) ignoring_hover: bool,
 }
 
 impl PlotImage {
@@ -1361,6 +1473,7 @@ impl PlotImage {
             bg_fill: Default::default(),
             tint: Color32::WHITE,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -1368,6 +1481,12 @@ impl PlotImage {
     #[inline]
     pub fn highlight(mut self, highlight: bool) -> Self {
         self.highlight = highlight;
+        self
+    }
+
+    /// Ignore this image in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
         self
     }
 
@@ -1509,6 +1628,14 @@ impl PlotItem for PlotImage {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::None
     }
@@ -1540,6 +1667,8 @@ pub struct BarChart {
     /// A custom element formatter
     pub(super) element_formatter: Option<Box<dyn Fn(&Bar, &BarChart) -> String>>,
 
+    pub(super) ignoring_hover: bool,
+
     highlight: bool,
     group: Option<SourceIndex>,
 }
@@ -1554,6 +1683,7 @@ impl BarChart {
             element_formatter: None,
             highlight: false,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -1636,6 +1766,12 @@ impl BarChart {
         self
     }
 
+    /// Ignore this chart in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
+        self
+    }
+
     /// Add a custom way to format an element.
     /// Can be used to display a set number of decimals or custom labels.
     #[inline]
@@ -1701,6 +1837,14 @@ impl PlotItem for BarChart {
         self.group.clone()
     }
 
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
+    }
+
     fn geometry(&self) -> PlotGeometry<'_> {
         PlotGeometry::Rects
     }
@@ -1743,6 +1887,8 @@ pub struct BoxPlot {
 
     highlight: bool,
     group: Option<SourceIndex>,
+
+    pub(super) ignoring_hover: bool,
 }
 
 impl BoxPlot {
@@ -1755,6 +1901,7 @@ impl BoxPlot {
             element_formatter: None,
             highlight: false,
             group: None,
+            ignoring_hover: false,
         }
     }
 
@@ -1830,6 +1977,12 @@ impl BoxPlot {
         self
     }
 
+    /// Ignore this plot in the plot when considering hover
+    pub fn ignore_hover(mut self, ignore_hover: bool) -> Self {
+        self.ignoring_hover = ignore_hover;
+        self
+    }
+
     /// Add a custom way to format an element.
     /// Can be used to display a set number of decimals or custom labels.
     pub fn element_formatter(
@@ -1870,6 +2023,14 @@ impl PlotItem for BoxPlot {
 
     fn group(&self) -> Option<SourceIndex> {
         self.group.clone()
+    }
+
+    fn ignore_hover(&mut self) {
+        self.ignoring_hover = true;
+    }
+
+    fn ignoring_hover(&self) -> bool {
+        self.ignoring_hover
     }
 
     fn geometry(&self) -> PlotGeometry<'_> {

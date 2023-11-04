@@ -336,7 +336,8 @@ impl MarkerDemo {
                 .name(format!("{marker:?}"))
                 .filled(self.fill_markers)
                 .radius(self.marker_radius)
-                .shape(marker);
+                .shape(marker)
+                .ignore_hover(true);
 
                 if !self.automatic_colors {
                     points = points.color(self.marker_color);
